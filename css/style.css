@@ -1,0 +1,91 @@
+/* ==========================================
+   Variáveis globais
+   ========================================== */
+:root {
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-bg: #f8fafc;
+  --color-text: #1e293b;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+
+  --font-base: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+
+  --radius: 8px;
+}
+
+/* ==========================================
+   Base
+   ========================================== */
+body {
+  font-family: var(--font-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* ==========================================
+   Header (BEM: .header, .header__title)
+   ========================================== */
+.header {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.header__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ==========================================
+   Main
+   ========================================== */
+.main {
+  padding: var(--spacing-lg);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ==========================================
+   Footer
+   ========================================== */
+.footer {
+  padding: var(--spacing-md);
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+#tasks-container {
+  width: 80%;
+  max-height: 50vh;
+  margin: 0 auto;
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+}
+
+#btns-container {
+  width: 40%;
+  padding: 10px;
+  margin: 50px auto;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+button {
+  height: 100%;
+  background-color: var(--color-primary);
+  padding: 10px;
+  font-weight: bold;
+  border-radius: var(--radius);
+}
+
+button:hover {
+  background-color: var(--color-muted);
+  color: var(--color-bg);
+}

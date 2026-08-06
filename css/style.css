@@ -60,6 +60,9 @@ body {
    Footer
    ========================================== */
 footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
   background: var(--bg-footer);
   color: var(--text-main);
   padding: 20px 24px;

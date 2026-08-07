@@ -43,6 +43,7 @@ body {
 }
 
 .header__title {
+  text-align: center;
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -261,7 +262,7 @@ footer {
 
 button {
   height: 100%;
-  background-color: var(--color-primary);
+  background-color: var(--accent-dark);
   padding: 10px;
   font-weight: bold;
   border-radius: var(--radius);

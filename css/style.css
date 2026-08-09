@@ -294,3 +294,31 @@ button:hover {
 #new-task-container label {
   padding: 10px 0;
 }
+
+#discard-modal[open] {
+  margin: 200px auto;
+  width: 10%;
+  padding: 10px;
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  border: none;
+  background-color: var(--color-border);
+}
+
+#discard-confirmation-btn-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  padding: 10px;
+  gap: 5px;
+}
+
+#discard-confirmation-btn-container button {
+  width: 70%;
+}
+
+#discard-modal p {
+  font-weight: bold;
+  text-align: center;
+}

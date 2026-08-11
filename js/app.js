@@ -13,6 +13,26 @@ const priorityEl = document.getElementById("task-priority");
 
 const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
+function handleVisibility() {
+  taskCont.style.display = taskCont.style.display === "none" ? "flex" : "none";
+  newTaskCont.style.display =
+    newTaskCont.style.display === "flex" ? "none" : "flex";
+}
+
+function updateTaskContainer() {
+  taskCont.innerHTML = `<h2>Tasks</h2>`;
+  savedTasks.forEach((task) => {
+    taskCont.innerHTML += `
+      <div id="${task.id}" class="single-task-cont">
+        <input type="checkbox" />
+        <p>Task: ${task.task}</p>
+        <p>Deadline: ${task.deadline}</p>
+        <p>Priority: ${task.priority}</p>
+      </div>
+    `;
+  });
+}
+
 function clearInput() {
   inputTaskEl.value = "";
   deadlineEl.value = "";
@@ -21,7 +41,7 @@ function clearInput() {
 
 function handleModal(e) {
   if (e.target === confirmDiscardBtn) {
-    newTaskCont.style.display = "none";
+    handleVisibility();
   }
   modalEl.close();
 }
@@ -34,17 +54,13 @@ function saveTask() {
     deadline: deadlineEl.value,
     priority: priorityEl.value,
   };
-  savedTasks.push(JSON.stringify(newTask));
-  localStorage.setItem("tasks", savedTasks);
-}
-
-function updateTaskContainer() {
-  //Implementar
+  savedTasks.push(newTask);
+  localStorage.setItem("tasks", JSON.stringify(savedTasks));
 }
 
 addTaskBtn.addEventListener("click", () => {
   clearInput();
-  newTaskCont.style.display = "flex";
+  handleVisibility();
 });
 
 discardBtn.addEventListener("click", () => {
@@ -53,7 +69,7 @@ discardBtn.addEventListener("click", () => {
     deadlineEl.value === "" &&
     priorityEl.value === ""
   ) {
-    newTaskCont.style.display = "none";
+    handleVisibility();
   } else {
     modalEl.showModal();
   }
@@ -61,7 +77,11 @@ discardBtn.addEventListener("click", () => {
 
 confirmDiscardBtn.addEventListener("click", handleModal);
 declineDiscardBtn.addEventListener("click", handleModal);
+
 saveTaskBtn.addEventListener("click", () => {
   saveTask();
-  newTaskCont.style.display = "none";
+  updateTaskContainer();
+  handleVisibility();
 });
+
+document.addEventListener("DOMContentLoaded", updateTaskContainer);

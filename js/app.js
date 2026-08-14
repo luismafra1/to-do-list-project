@@ -1,17 +1,17 @@
 const taskCont = document.getElementById("tasks-container");
-const newTaskCont = document.getElementById("new-task-container"); //used
-const addTaskBtn = document.getElementById("add-task"); //used
+const newTaskCont = document.getElementById("new-task-container");
+const addTaskBtn = document.getElementById("add-task");
 const deleteTaskBtn = document.getElementById("delete-task");
-const discardBtn = document.getElementById("discard-task"); //used
-const saveTaskBtn = document.getElementById("save-task"); //used
-const modalEl = document.getElementById("discard-modal"); //used
-const confirmDiscardBtn = document.getElementById("yes"); //used
-const declineDiscardBtn = document.getElementById("no"); //used
+const discardBtn = document.getElementById("discard-task");
+const saveTaskBtn = document.getElementById("save-task");
+const modalEl = document.getElementById("discard-modal");
+const confirmDiscardBtn = document.getElementById("yes");
+const declineDiscardBtn = document.getElementById("no");
 const inputTaskEl = document.getElementById("task-name");
 const deadlineEl = document.getElementById("task-deadline");
 const priorityEl = document.getElementById("task-priority");
 
-const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let savedTasks;
 
 function handleVisibility() {
   taskCont.style.display = taskCont.style.display === "none" ? "flex" : "none";
@@ -22,7 +22,8 @@ function handleVisibility() {
 }
 
 function updateTaskContainer() {
-  taskCont.innerHTML = `<h2>Tasks</h2>`;
+  savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  taskCont.innerHTML = "";
   savedTasks.forEach((task) => {
     taskCont.innerHTML += `
       <div id="${task.id}" class="single-task-cont">
@@ -60,6 +61,17 @@ function saveTask() {
   localStorage.setItem("tasks", JSON.stringify(savedTasks));
 }
 
+function deleteTask() {
+  const tasksToDelete = [];
+  const currentDivsTasks = taskCont.querySelectorAll("div");
+  currentDivsTasks.forEach((task) => {
+    const checkbox = task.querySelector('input[type="checkbox"]');
+    if (checkbox.checked) tasksToDelete.push(Number(task.id));
+  });
+  savedTasks = savedTasks.filter((task) => !tasksToDelete.includes(task.id));
+  localStorage.setItem("tasks", JSON.stringify(savedTasks));
+}
+
 addTaskBtn.addEventListener("click", () => {
   clearInput();
   handleVisibility();
@@ -84,6 +96,11 @@ saveTaskBtn.addEventListener("click", () => {
   saveTask();
   updateTaskContainer();
   handleVisibility();
+});
+
+deleteTaskBtn.addEventListener("click", () => {
+  deleteTask();
+  updateTaskContainer();
 });
 
 document.addEventListener("DOMContentLoaded", updateTaskContainer);

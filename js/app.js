@@ -17,6 +17,8 @@ function handleVisibility() {
   taskCont.style.display = taskCont.style.display === "none" ? "flex" : "none";
   newTaskCont.style.display =
     newTaskCont.style.display === "flex" ? "none" : "flex";
+  addTaskBtn.hidden = newTaskCont.style.display === "flex";
+  deleteTaskBtn.hidden = newTaskCont.style.display === "flex";
 }
 
 function updateTaskContainer() {
@@ -25,9 +27,9 @@ function updateTaskContainer() {
     taskCont.innerHTML += `
       <div id="${task.id}" class="single-task-cont">
         <input type="checkbox" />
-        <p>Task: ${task.task}</p>
-        <p>Deadline: ${task.deadline}</p>
-        <p>Priority: ${task.priority}</p>
+        <p><strong>Task:</strong> ${task.task}</p>
+        <p><strong>Deadline:</strong> ${task.deadline}</p>
+        <p><strong>Priority:</strong> ${task.priority}</p>
       </div>
     `;
   });

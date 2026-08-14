@@ -44,7 +44,7 @@ body {
 
 .header__title {
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
 }
 
@@ -250,7 +250,11 @@ footer {
   display: flex;
   flex-flow: column wrap;
   align-items: center;
-  border: 2px solid red;
+}
+
+#tasks-container h2 {
+  margin-bottom: 20px;
+  color: var(--bg-footer-alt);
 }
 
 #btns-container {
@@ -293,6 +297,7 @@ button:hover {
 
 #new-task-container label {
   padding: 10px 0;
+  font-weight: bold;
 }
 
 #discard-modal[open] {
@@ -321,4 +326,38 @@ button:hover {
 #discard-modal p {
   font-weight: bold;
   text-align: center;
+}
+
+.single-task-cont {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.single-task-cont p {
+  margin: 0;
+}
+
+.single-task-cont p:nth-of-type(1) {
+  flex: 0 0 auto;
+  min-width: 300px;
+  text-align: left;
+}
+
+.single-task-cont p:nth-of-type(2) {
+  flex: 0 0 auto;
+  min-width: 200px;
+  text-align: center;
+}
+
+.single-task-cont p:nth-of-type(3) {
+  flex: 0 0 auto;
+  min-width: 120px;
+  text-align: left;
+}
+
+.single-task-cont input[type="checkbox"] {
+  cursor: pointer;
 }

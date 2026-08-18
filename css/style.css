@@ -216,13 +216,6 @@ footer {
   color: var(--accent);
 }
 
-@media (max-width: 640px) {
-  .footer-row,
-  .footer-bottom {
-    justify-content: flex-start;
-  }
-}
-
 /* ==========================================
    Exemplo de componente seguindo BEM
    .card, .card__title, .card--highlighted
@@ -267,10 +260,8 @@ h2 {
 }
 
 button {
-  height: 100%;
-  width: 40%;
   background-color: var(--accent-dark);
-  padding: 10px;
+  padding: 12px 16px;
   font-weight: bold;
   border-radius: var(--radius);
 }
@@ -278,6 +269,21 @@ button {
 button:hover {
   background-color: var(--color-muted);
   color: var(--color-bg);
+}
+
+#btns-container,
+#new-task-btns-container,
+#discard-confirmation-btn-container {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  /* align-items: stretch é o padrão — não precisa declarar */
+}
+
+#btns-container button,
+#new-task-btns-container button {
+  flex: 1;
+  min-width: 110px;
 }
 
 #new-task-container {
@@ -291,8 +297,6 @@ button:hover {
 
 #new-task-btns-container {
   margin-top: 20px;
-  display: flex;
-  justify-content: space-evenly;
   align-items: center;
 }
 
@@ -303,7 +307,7 @@ button:hover {
 
 #discard-modal[open] {
   margin: 200px auto;
-  width: 10%;
+  width: min(90%, 320px);
   padding: 10px;
   display: flex;
   flex-flow: column wrap;
@@ -318,10 +322,6 @@ button:hover {
   justify-content: space-evenly;
   padding: 10px;
   gap: 5px;
-}
-
-#discard-confirmation-btn-container button {
-  width: 70%;
 }
 
 #discard-modal p {
@@ -361,4 +361,62 @@ button:hover {
 
 .single-task-cont input[type="checkbox"] {
   cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  #new-task-container {
+    width: 90%;
+  }
+
+  #btns-container {
+    width: 90%;
+  }
+
+  #discard-modal[open] {
+    width: 80%;
+    margin: 100px auto;
+  }
+
+  /* Empilha as infos da task em vez de forçar largura mínima */
+  .single-task-cont {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .single-task-cont p:nth-of-type(1),
+  .single-task-cont p:nth-of-type(2),
+  .single-task-cont p:nth-of-type(3) {
+    min-width: 0;
+    width: 100%;
+    text-align: left;
+  }
+
+  /* Footer para de ficar fixo em telas pequenas, evita sobrepor conteúdo */
+  footer {
+    position: static;
+  }
+
+  .footer-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #tasks-container {
+    width: 95%;
+    max-height: none;
+    flex-flow: column nowrap; /* uma coluna só, empilhado verticalmente */
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .contact-inline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }

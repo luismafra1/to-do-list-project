@@ -23,17 +23,19 @@ function handleVisibility() {
 
 function updateTaskContainer() {
   savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  taskCont.innerHTML = "";
-  savedTasks.forEach((task) => {
-    taskCont.innerHTML += `
-      <div id="${task.id}" class="single-task-cont">
-        <input type="checkbox" />
+  taskCont.innerHTML = savedTasks
+    .map(
+      (task) =>
+        `
+      <div id="task-${task.id}" class="single-task-cont" role="listitem">
+        <input type="checkbox" aria-label="Selecionar tarefa: ${task.task}" />
         <p><strong>Task:</strong> ${task.task}</p>
-        <p><strong>Deadline:</strong> ${task.deadline}</p>
+        <p><strong>Deadline:</strong> ${formatDateBR(task.deadline)}</p>
         <p><strong>Priority:</strong> ${task.priority}</p>
       </div>
-    `;
-  });
+    `,
+    )
+    .join("");
 }
 
 function clearInput() {
@@ -50,9 +52,8 @@ function handleModal(e) {
 }
 
 function saveTask() {
-  const newTaskIndex = savedTasks.length;
   const newTask = {
-    id: newTaskIndex,
+    id: crypto.randomUUID(),
     task: inputTaskEl.value,
     deadline: deadlineEl.value,
     priority: priorityEl.value,
@@ -63,13 +64,19 @@ function saveTask() {
 
 function deleteTask() {
   const tasksToDelete = [];
-  const currentDivsTasks = taskCont.querySelectorAll("div");
+  const currentDivsTasks = taskCont.querySelectorAll(".single-task-cont");
   currentDivsTasks.forEach((task) => {
     const checkbox = task.querySelector('input[type="checkbox"]');
-    if (checkbox.checked) tasksToDelete.push(Number(task.id));
+    if (checkbox.checked) tasksToDelete.push(task.id);
   });
   savedTasks = savedTasks.filter((task) => !tasksToDelete.includes(task.id));
   localStorage.setItem("tasks", JSON.stringify(savedTasks));
+}
+
+function formatDateBR(isoDate) {
+  if (!isoDate) return "-";
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
 }
 
 addTaskBtn.addEventListener("click", () => {
@@ -93,6 +100,10 @@ confirmDiscardBtn.addEventListener("click", handleModal);
 declineDiscardBtn.addEventListener("click", handleModal);
 
 saveTaskBtn.addEventListener("click", () => {
+  if (inputTaskEl.value.trim() === "") {
+    inputTaskEl.focus();
+    return;
+  }
   saveTask();
   updateTaskContainer();
   handleVisibility();
@@ -106,10 +117,12 @@ deleteTaskBtn.addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", updateTaskContainer);
 
 /*
- * Pedir para o Claude verificar a logica dos arquivos;
- * Pedir para ele adicionar ARIA-Attributes, para acessibilidade;
- * Pedir para ele corrigir o redimensionamento da tela;
- * Pedir para ele verificar se alguma funcionalidade precisa/pode ser adicionada;
- * Pedir para ele corrigir o formato da data para DD/MM/YYYY.
  * Implementar edicao de task
+ * Implementar marcar como concluida sem deletar
+ * (botao de lixeira separado para melhor visualizacao)
+ * Implementar contador de tarefas pendentes/concluidas
+ * Ordenacao por deadline/prioridade
+ * Cor por prioidade
+ * Alerta visual de deadline proximo/vencido
+ * Filtros de todas/pendentes/concluidas
  */

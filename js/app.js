@@ -104,3 +104,12 @@ deleteTaskBtn.addEventListener("click", () => {
 });
 
 document.addEventListener("DOMContentLoaded", updateTaskContainer);
+
+/*
+ * Pedir para o Claude verificar a logica dos arquivos;
+ * Pedir para ele adicionar ARIA-Attributes, para acessibilidade;
+ * Pedir para ele corrigir o redimensionamento da tela;
+ * Pedir para ele verificar se alguma funcionalidade precisa/pode ser adicionada;
+ * Pedir para ele corrigir o formato da data para DD/MM/YYYY.
+ * Implementar edicao de task
+ */

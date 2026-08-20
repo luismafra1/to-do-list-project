@@ -28,10 +28,18 @@ function updateTaskContainer() {
       (task) =>
         `
       <div id="task-${task.id}" class="single-task-cont" role="listitem">
-        <input type="checkbox" aria-label="Selecionar tarefa: ${task.task}" />
+        <input type="checkbox" aria-label="Select task: ${task.task}" class="complete-task" />
         <p><strong>Task:</strong> ${task.task}</p>
         <p><strong>Deadline:</strong> ${formatDateBR(task.deadline)}</p>
         <p><strong>Priority:</strong> ${task.priority}</p>
+        <label class="trash-checkbox">
+          <input type="checkbox" class="delete-trigger" aria-label="Delete task: ${task.task}"/>
+          <svg class="trash-icon" xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"></path>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          </svg>
+        </label>
       </div>
     `,
     )
@@ -66,10 +74,14 @@ function deleteTask() {
   const tasksToDelete = [];
   const currentDivsTasks = taskCont.querySelectorAll(".single-task-cont");
   currentDivsTasks.forEach((task) => {
-    const checkbox = task.querySelector('input[type="checkbox"]');
+    const checkbox = task.querySelector(
+      '.trash-checkbox input[type="checkbox"]',
+    );
     if (checkbox.checked) tasksToDelete.push(task.id);
   });
-  savedTasks = savedTasks.filter((task) => !tasksToDelete.includes(task.id));
+  savedTasks = savedTasks.filter(
+    (task) => !tasksToDelete.includes(`task-${task.id}`),
+  );
   localStorage.setItem("tasks", JSON.stringify(savedTasks));
 }
 
@@ -77,6 +89,12 @@ function formatDateBR(isoDate) {
   if (!isoDate) return "-";
   const [year, month, day] = isoDate.split("-");
   return `${day}/${month}/${year}`;
+}
+
+function handleCompletion(task) {
+  const inputChecked = task.querySelector(".complete-task");
+  task.style.textDecoration = inputChecked.checked ? "line-through" : "none";
+  task.style.fontStyle = inputChecked.checked ? "italic" : "normal";
 }
 
 addTaskBtn.addEventListener("click", () => {
@@ -116,10 +134,13 @@ deleteTaskBtn.addEventListener("click", () => {
 
 document.addEventListener("DOMContentLoaded", updateTaskContainer);
 
+taskCont.addEventListener("change", (e) => {
+  if (e.target.classList.contains("complete-task"))
+    handleCompletion(e.target.parentElement);
+});
+
 /*
  * Implementar edicao de task
- * Implementar marcar como concluida sem deletar
- * (botao de lixeira separado para melhor visualizacao)
  * Implementar contador de tarefas pendentes/concluidas
  * Ordenacao por deadline/prioridade
  * Cor por prioidade

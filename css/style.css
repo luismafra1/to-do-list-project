@@ -124,7 +124,7 @@ button:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
 }
 
@@ -134,7 +134,7 @@ button:hover {
 
 .single-task-cont p:nth-of-type(1) {
   flex: 0 0 auto;
-  min-width: 300px;
+  min-width: 290px;
   text-align: left;
 }
 
@@ -151,7 +151,60 @@ button:hover {
 }
 
 .single-task-cont input[type="checkbox"] {
+  accent-color: var(--accent-dark);
+}
+
+.single-task-cont input[type="checkbox"]:hover {
+  transform: scale(1.1);
+}
+
+.trash-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.single-task-cont input[type="checkbox"],
+.trash-checkbox {
   cursor: pointer;
+  display: inline-block;
+  padding: 4px;
+}
+
+.trash-icon {
+  width: 17px;
+  height: 17px;
+  stroke: var(--bg-footer-alt);
+  transition:
+    stroke 0.2s ease,
+    transform 0.2s ease;
+}
+
+.trash-checkbox:hover .trash-icon {
+  stroke: var(--color-trash-icon);
+  transform: scale(1.1);
+}
+
+.trash-checkbox input[type="checkbox"]:checked + .trash-icon {
+  stroke: var(--color-trash-icon-checked);
+  fill: var(--color-trash-icon-fill);
+  animation: shake 0.2s ease-in-out;
+}
+
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 @media (max-width: 700px) {

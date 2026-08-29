@@ -10,6 +10,7 @@ const declineDiscardBtn = document.getElementById("no");
 const inputTaskEl = document.getElementById("task-name");
 const deadlineEl = document.getElementById("task-deadline");
 const priorityEl = document.getElementById("task-priority");
+const counterEl = document.getElementById("counter");
 
 let savedTasks;
 
@@ -17,6 +18,8 @@ function handleVisibility() {
   taskCont.style.display = taskCont.style.display === "none" ? "flex" : "none";
   newTaskCont.style.display =
     newTaskCont.style.display === "flex" ? "none" : "flex";
+  counterEl.style.display =
+    counterEl.style.display === "none" ? "block" : "none";
   addTaskBtn.hidden = newTaskCont.style.display === "flex";
   deleteTaskBtn.hidden = newTaskCont.style.display === "flex";
 }
@@ -24,11 +27,11 @@ function handleVisibility() {
 function updateTaskContainer() {
   savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
   taskCont.innerHTML = savedTasks
-    .map(
-      (task) =>
-        `
-      <div id="task-${task.id}" class="single-task-cont" role="listitem">
-        <input type="checkbox" aria-label="Select task: ${task.task}" class="complete-task" />
+    .map((task) => {
+      const completedClass = task.isChecked ? "completed" : "";
+      return `
+      <div id="task-${task.id}" class="single-task-cont ${completedClass}" role="listitem">
+        <input type="checkbox" aria-label="Select task: ${task.task}" class="complete-task" ${task.isChecked ? "checked" : ""}/>
         <p><strong>Task:</strong> ${task.task}</p>
         <p><strong>Deadline:</strong> ${formatDateBR(task.deadline)}</p>
         <p><strong>Priority:</strong> ${task.priority}</p>
@@ -41,8 +44,8 @@ function updateTaskContainer() {
           </svg>
         </label>
       </div>
-    `,
-    )
+    `;
+    })
     .join("");
 }
 
@@ -65,6 +68,7 @@ function saveTask() {
     task: inputTaskEl.value,
     deadline: deadlineEl.value,
     priority: priorityEl.value,
+    isChecked: false,
   };
   savedTasks.push(newTask);
   localStorage.setItem("tasks", JSON.stringify(savedTasks));
@@ -92,9 +96,25 @@ function formatDateBR(isoDate) {
 }
 
 function handleCompletion(task) {
+  // Styling
   const inputChecked = task.querySelector(".complete-task");
-  task.style.textDecoration = inputChecked.checked ? "line-through" : "none";
-  task.style.fontStyle = inputChecked.checked ? "italic" : "normal";
+  task.classList.toggle("completed", inputChecked.checked);
+  // Updating checked status in localStorage
+  const taskId = task.id.replace("task-", "");
+  const currentTask = savedTasks.find((task) => task.id === taskId);
+  if (currentTask) {
+    currentTask.isChecked = inputChecked.checked;
+  }
+  localStorage.setItem("tasks", JSON.stringify(savedTasks));
+}
+
+function updateTaskCounter() {
+  if (!savedTasks || !savedTasks.length) {
+    counterEl.innerText = "";
+    return;
+  }
+  const completedTasks = savedTasks.filter((task) => task.isChecked);
+  counterEl.innerText = `${completedTasks.length}/${savedTasks.length}`;
 }
 
 addTaskBtn.addEventListener("click", () => {
@@ -124,24 +144,30 @@ saveTaskBtn.addEventListener("click", () => {
   }
   saveTask();
   updateTaskContainer();
+  updateTaskCounter();
   handleVisibility();
 });
 
 deleteTaskBtn.addEventListener("click", () => {
   deleteTask();
   updateTaskContainer();
+  updateTaskCounter();
 });
 
-document.addEventListener("DOMContentLoaded", updateTaskContainer);
+document.addEventListener("DOMContentLoaded", () => {
+  updateTaskContainer();
+  updateTaskCounter();
+});
 
 taskCont.addEventListener("change", (e) => {
-  if (e.target.classList.contains("complete-task"))
+  if (e.target.classList.contains("complete-task")) {
     handleCompletion(e.target.parentElement);
+    updateTaskCounter();
+  }
 });
 
 /*
  * Implementar edicao de task
- * Implementar contador de tarefas pendentes/concluidas
  * Ordenacao por deadline/prioridade
  * Cor por prioidade
  * Alerta visual de deadline proximo/vencido

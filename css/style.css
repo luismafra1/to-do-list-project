@@ -140,13 +140,13 @@ button:hover {
 
 .single-task-cont p:nth-of-type(1) {
   flex: 0 0 auto;
-  min-width: 290px;
+  min-width: 250px;
   text-align: left;
 }
 
 .single-task-cont p:nth-of-type(2) {
   flex: 0 0 auto;
-  min-width: 200px;
+  min-width: 190px;
   text-align: center;
 }
 
@@ -198,9 +198,19 @@ button:hover {
   animation: shake 0.2s ease-in-out;
 }
 
-#counter {
-  text-align: right;
-  margin-right: 12%;
+#counter-paragraph {
+  text-align: center;
+  width: 80%;
+  margin: 15px auto 0 auto;
+}
+
+.edit-trigger {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+  text-align: center;
+  background-color: transparent;
 }
 
 @keyframes shake {

@@ -23,7 +23,10 @@
     <main class="main">
       <h2>Tasks</h2>
       <div id="tasks-container" role="list" aria-live="polite"></div>
-      <p id="counter" aria-live="polite"></p>
+      <p id="counter-paragraph">
+        <strong>Concluídas/Total: </strong
+        ><span id="counter" aria-live="polite"></span>
+      </p>
       <div id="new-task-container">
         <label for="task-name">New task</label>
         <input id="task-name" type="text" />

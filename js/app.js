@@ -1,3 +1,4 @@
+// Capturando os elementos HTML
 const taskCont = document.getElementById("tasks-container");
 const newTaskCont = document.getElementById("new-task-container");
 const addTaskBtn = document.getElementById("add-task");
@@ -11,19 +12,27 @@ const inputTaskEl = document.getElementById("task-name");
 const deadlineEl = document.getElementById("task-deadline");
 const priorityEl = document.getElementById("task-priority");
 const counterEl = document.getElementById("counter");
+const counterParagEl = document.getElementById("counter-paragraph");
 
+// Criando array de tasks
 let savedTasks;
 
+// Criando id global
+let globalId;
+
+// Funcao criada para controlar a visibilidade dos containers de task e de nova task
 function handleVisibility() {
   taskCont.style.display = taskCont.style.display === "none" ? "flex" : "none";
   newTaskCont.style.display =
     newTaskCont.style.display === "flex" ? "none" : "flex";
-  counterEl.style.display =
-    counterEl.style.display === "none" ? "block" : "none";
+  counterParagEl.style.display =
+    counterParagEl.style.display === "none" ? "block" : "none";
   addTaskBtn.hidden = newTaskCont.style.display === "flex";
   deleteTaskBtn.hidden = newTaskCont.style.display === "flex";
 }
 
+/* Funcao criada para atualizar o container das tasks sempre que ha
+uma mudanca nele*/
 function updateTaskContainer() {
   savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
   taskCont.innerHTML = savedTasks
@@ -43,18 +52,21 @@ function updateTaskContainer() {
             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
           </svg>
         </label>
+        <button type="button" class="edit-trigger" aria-label="Editar tarefa: ${task.task}">✎</button>
       </div>
     `;
     })
     .join("");
 }
 
+// Funcao criada para limpar os inputs para a adicao de uma nova task
 function clearInput() {
   inputTaskEl.value = "";
   deadlineEl.value = "";
   priorityEl.value = "";
 }
 
+// Funcao criada para gerenciar o modal no caso de descarte da nova task
 function handleModal(e) {
   if (e.target === confirmDiscardBtn) {
     handleVisibility();
@@ -62,18 +74,29 @@ function handleModal(e) {
   modalEl.close();
 }
 
-function saveTask() {
-  const newTask = {
-    id: crypto.randomUUID(),
-    task: inputTaskEl.value,
-    deadline: deadlineEl.value,
-    priority: priorityEl.value,
-    isChecked: false,
-  };
-  savedTasks.push(newTask);
+// Funcao criada para salvar/atualizar a nova task no array
+function saveTask(id = "") {
+  if (id === "") {
+    const newTask = {
+      id: crypto.randomUUID(),
+      task: inputTaskEl.value,
+      deadline: deadlineEl.value,
+      priority: priorityEl.value,
+      isChecked: false,
+    };
+    savedTasks.push(newTask);
+  } else {
+    const currentTask = savedTasks.find((task) => task.id === id);
+    if (currentTask) {
+      currentTask.task = inputTaskEl.value;
+      currentTask.deadline = deadlineEl.value;
+      currentTask.priority = priorityEl.value;
+    }
+  }
   localStorage.setItem("tasks", JSON.stringify(savedTasks));
 }
 
+// Funcao criada para deletar a task do array
 function deleteTask() {
   const tasksToDelete = [];
   const currentDivsTasks = taskCont.querySelectorAll(".single-task-cont");
@@ -89,12 +112,14 @@ function deleteTask() {
   localStorage.setItem("tasks", JSON.stringify(savedTasks));
 }
 
+// Funcao criada para alterar o formato da data para data local do Brasil
 function formatDateBR(isoDate) {
   if (!isoDate) return "-";
   const [year, month, day] = isoDate.split("-");
   return `${day}/${month}/${year}`;
 }
 
+// Funcao criada para gerenciar a finalizacao de uma task
 function handleCompletion(task) {
   // Styling
   const inputChecked = task.querySelector(".complete-task");
@@ -108,6 +133,7 @@ function handleCompletion(task) {
   localStorage.setItem("tasks", JSON.stringify(savedTasks));
 }
 
+// Funcao criada para atualizar o contador de tasks, caso uma seja concluida ou adicionada
 function updateTaskCounter() {
   if (!savedTasks || !savedTasks.length) {
     counterEl.innerText = "";
@@ -117,11 +143,30 @@ function updateTaskCounter() {
   counterEl.innerText = `${completedTasks.length}/${savedTasks.length}`;
 }
 
+// Funcao criada para abrir a edicao de tasks salvas com os dados atuais
+function updateCurrentTask(e) {
+  if (e.target.tagName === "DIV") {
+    globalId = e.target.id.replace("task-", "");
+  } else {
+    globalId = e.target.parentElement.id.replace("task-", "");
+  }
+  const task = savedTasks.find((task) => task.id === globalId);
+  handleVisibility();
+  inputTaskEl.value = task.task;
+  deadlineEl.value = task.deadline;
+  priorityEl.value = task.priority;
+  saveTaskBtn.innerText = "Update Task";
+}
+
+// Evento para adicionar task nova
 addTaskBtn.addEventListener("click", () => {
+  saveTaskBtn.innerText = "Save Task";
+  globalId = "";
   clearInput();
   handleVisibility();
 });
 
+// Evento para discartar ou nao a nova task sendo adicionada
 discardBtn.addEventListener("click", () => {
   if (
     inputTaskEl.value === "" &&
@@ -134,31 +179,32 @@ discardBtn.addEventListener("click", () => {
   }
 });
 
+// Eventos para gerenciar o modal
 confirmDiscardBtn.addEventListener("click", handleModal);
 declineDiscardBtn.addEventListener("click", handleModal);
 
+// Evento para salvar/atualizar a task no array e atualizar o container de tasks
 saveTaskBtn.addEventListener("click", () => {
-  if (inputTaskEl.value.trim() === "") {
-    inputTaskEl.focus();
-    return;
-  }
-  saveTask();
+  saveTask(globalId);
   updateTaskContainer();
   updateTaskCounter();
   handleVisibility();
 });
 
+// Evento para deletar uma ou mais tasks selecionadas do array e atualizar o cont. de tasks
 deleteTaskBtn.addEventListener("click", () => {
   deleteTask();
   updateTaskContainer();
   updateTaskCounter();
 });
 
+// Evento para carregar as tasks salvas no localStora assim que a pagina carrega
 document.addEventListener("DOMContentLoaded", () => {
   updateTaskContainer();
   updateTaskCounter();
 });
 
+// Evento para marcar/desmarcar uma task como concluida e atualizar o contador
 taskCont.addEventListener("change", (e) => {
   if (e.target.classList.contains("complete-task")) {
     handleCompletion(e.target.parentElement);
@@ -166,10 +212,15 @@ taskCont.addEventListener("change", (e) => {
   }
 });
 
+// Evento para atualizar uma task ja criada via botao
+taskCont.addEventListener("click", (e) => {
+  if (e.target.closest(".edit-trigger")) {
+    updateCurrentTask(e);
+  }
+});
+
 /*
- * Implementar edicao de task
- * Ordenacao por deadline/prioridade
- * Cor por prioidade
+ * Ordenacao por nome/deadline/prioridade/concluidas
  * Alerta visual de deadline proximo/vencido
  * Filtros de todas/pendentes/concluidas
  */

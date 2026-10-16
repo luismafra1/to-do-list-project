@@ -2,7 +2,8 @@
    Base
    ========================================== */
 body {
-  padding-bottom: 119px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ==========================================
@@ -26,6 +27,8 @@ body {
   padding: var(--spacing-lg);
   max-width: 960px;
   margin: 0 auto;
+  flex: 1;
+  width: 100%;
 }
 
 #tasks-container {
@@ -34,6 +37,22 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+#tasks-container-footer {
+  width: 80%;
+  margin: 20px auto 0 auto;
+  padding: 15px 0;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#filter {
+  margin-left: 7px;
+  min-width: 120px;
+  border-radius: 3px;
 }
 
 h2 {
@@ -47,7 +66,6 @@ h2 {
   padding: 10px;
   margin: 50px auto;
   display: flex;
-  justify-content: space-evenly;
 }
 
 button {
@@ -78,9 +96,8 @@ button:hover {
 
 #new-task-container {
   display: none;
-  flex-flow: column wrap;
+  flex-direction: column;
   width: 50%;
-  height: 80%;
   margin: 0 auto;
   padding: 10px;
 }
@@ -121,8 +138,8 @@ button:hover {
 
 .single-task-cont {
   width: 100%;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 165px 135px auto auto;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
@@ -131,29 +148,11 @@ button:hover {
 .single-task-cont.completed {
   text-decoration: line-through;
   font-style: italic;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .single-task-cont p {
   margin: 0;
-}
-
-.single-task-cont p:nth-of-type(1) {
-  flex: 0 0 auto;
-  min-width: 250px;
-  text-align: left;
-}
-
-.single-task-cont p:nth-of-type(2) {
-  flex: 0 0 auto;
-  min-width: 190px;
-  text-align: center;
-}
-
-.single-task-cont p:nth-of-type(3) {
-  flex: 0 0 auto;
-  min-width: 120px;
-  text-align: left;
 }
 
 .single-task-cont input[type="checkbox"] {
@@ -198,10 +197,9 @@ button:hover {
   animation: shake 0.2s ease-in-out;
 }
 
-#counter-paragraph {
-  text-align: center;
-  width: 80%;
-  margin: 15px auto 0 auto;
+.trash-checkbox input[type="checkbox"]:focus-visible + .trash-icon {
+  outline: 2px solid var(--accent-dark);
+  outline-offset: 2px;
 }
 
 .edit-trigger {
@@ -242,22 +240,21 @@ button:hover {
     margin: 100px auto;
   }
 
+  #tasks-container {
+    width: 95%;
+  }
+}
+
+@media (max-width: 800px) {
   /* Empilha as infos da task em vez de forçar largura mínima */
   .single-task-cont {
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
     gap: 0.25rem;
   }
 
-  .single-task-cont p:nth-of-type(1),
-  .single-task-cont p:nth-of-type(2),
-  .single-task-cont p:nth-of-type(3) {
-    min-width: 0;
+  .single-task-cont p {
     width: 100%;
-    text-align: left;
-  }
-
-  #tasks-container {
-    width: 95%;
   }
 }

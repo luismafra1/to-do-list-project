@@ -12,21 +12,36 @@ const inputTaskEl = document.getElementById("task-name");
 const deadlineEl = document.getElementById("task-deadline");
 const priorityEl = document.getElementById("task-priority");
 const counterEl = document.getElementById("counter");
-const counterParagEl = document.getElementById("counter-paragraph");
+const filterEl = document.getElementById("filter");
+const tasksContFootEl = document.getElementById("tasks-container-footer");
 
 // Criando array de tasks
-let savedTasks;
+let savedTasks = [];
 
 // Criando id global
-let globalId;
+let globalId = "";
+
+// Criando Ordem de prioridade
+const priorityOrder = {
+  high: 0,
+  medium: 1,
+  low: 2,
+};
+
+// Criando Mapa de rotulos
+const priorityLabels = {
+  high: "High",
+  medium: "Medium",
+  low: "Low",
+};
 
 // Funcao criada para controlar a visibilidade dos containers de task e de nova task
 function handleVisibility() {
   taskCont.style.display = taskCont.style.display === "none" ? "flex" : "none";
   newTaskCont.style.display =
     newTaskCont.style.display === "flex" ? "none" : "flex";
-  counterParagEl.style.display =
-    counterParagEl.style.display === "none" ? "block" : "none";
+  tasksContFootEl.style.display =
+    tasksContFootEl.style.display === "none" ? "flex" : "none";
   addTaskBtn.hidden = newTaskCont.style.display === "flex";
   deleteTaskBtn.hidden = newTaskCont.style.display === "flex";
 }
@@ -35,24 +50,26 @@ function handleVisibility() {
 uma mudanca nele*/
 function updateTaskContainer() {
   savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  taskCont.innerHTML = savedTasks
+  taskCont.innerHTML = getVisibleTasks()
     .map((task) => {
       const completedClass = task.isChecked ? "completed" : "";
+      const safeTask = escapeHTML(task.task);
+      const safePriority = escapeHTML(priorityLabels[task.priority] ?? "-");
       return `
       <div id="task-${task.id}" class="single-task-cont ${completedClass}" role="listitem">
-        <input type="checkbox" aria-label="Select task: ${task.task}" class="complete-task" ${task.isChecked ? "checked" : ""}/>
-        <p><strong>Task:</strong> ${task.task}</p>
+        <input type="checkbox" aria-label="Select task: ${safeTask}" class="complete-task" ${task.isChecked ? "checked" : ""}/>
+        <p><strong>Task:</strong> ${safeTask}</p>
         <p><strong>Deadline:</strong> ${formatDateBR(task.deadline)}</p>
-        <p><strong>Priority:</strong> ${task.priority}</p>
+        <p><strong>Priority:</strong> ${safePriority}</p>
         <label class="trash-checkbox">
-          <input type="checkbox" class="delete-trigger" aria-label="Delete task: ${task.task}"/>
-          <svg class="trash-icon" xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <input type="checkbox" class="delete-trigger" aria-label="Delete task: ${safeTask}"/>
+          <svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 6h18"></path>
             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
           </svg>
         </label>
-        <button type="button" class="edit-trigger" aria-label="Editar tarefa: ${task.task}">✎</button>
+        <button type="button" class="edit-trigger" aria-label="Edit task: ${safeTask}">✎</button>
       </div>
     `;
     })
@@ -79,7 +96,7 @@ function saveTask(id = "") {
   if (id === "") {
     const newTask = {
       id: crypto.randomUUID(),
-      task: inputTaskEl.value,
+      task: inputTaskEl.value.trim(),
       deadline: deadlineEl.value,
       priority: priorityEl.value,
       isChecked: false,
@@ -88,7 +105,7 @@ function saveTask(id = "") {
   } else {
     const currentTask = savedTasks.find((task) => task.id === id);
     if (currentTask) {
-      currentTask.task = inputTaskEl.value;
+      currentTask.task = inputTaskEl.value.trim();
       currentTask.deadline = deadlineEl.value;
       currentTask.priority = priorityEl.value;
     }
@@ -145,17 +162,57 @@ function updateTaskCounter() {
 
 // Funcao criada para abrir a edicao de tasks salvas com os dados atuais
 function updateCurrentTask(e) {
-  if (e.target.tagName === "DIV") {
-    globalId = e.target.id.replace("task-", "");
-  } else {
-    globalId = e.target.parentElement.id.replace("task-", "");
-  }
+  globalId = e.target.closest(".single-task-cont").id.replace("task-", "");
   const task = savedTasks.find((task) => task.id === globalId);
   handleVisibility();
   inputTaskEl.value = task.task;
   deadlineEl.value = task.deadline;
   priorityEl.value = task.priority;
   saveTaskBtn.innerText = "Update Task";
+}
+
+// Funcao para ordenar por prioridade
+function priorityRank(priority) {
+  return priorityOrder[priority] ?? 99;
+}
+
+// Funcao criada para exibir as tasks, dependendo do valor no option do select
+function getVisibleTasks() {
+  let tasks = [...savedTasks];
+
+  switch (filterEl.value) {
+    case "task":
+      tasks.sort((a, b) => a.task.localeCompare(b.task));
+      break;
+    case "deadline":
+      tasks.sort((a, b) => {
+        if (!a.deadline && !b.deadline) return 0;
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return a.deadline.localeCompare(b.deadline);
+      });
+      break;
+    case "priority":
+      tasks.sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority));
+      break;
+    case "finished":
+      tasks = tasks.filter((task) => task.isChecked);
+      break;
+    case "not-finished":
+      tasks = tasks.filter((task) => !task.isChecked);
+      break;
+  }
+  return tasks;
+}
+
+// Funcao para dar escape em determinados inputs
+function escapeHTML(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 // Evento para adicionar task nova
@@ -185,6 +242,11 @@ declineDiscardBtn.addEventListener("click", handleModal);
 
 // Evento para salvar/atualizar a task no array e atualizar o container de tasks
 saveTaskBtn.addEventListener("click", () => {
+  if (inputTaskEl.value.trim() === "") {
+    inputTaskEl.focus();
+    return;
+  }
+  if (globalId === "") filterEl.value = "reset";
   saveTask(globalId);
   updateTaskContainer();
   updateTaskCounter();
@@ -209,6 +271,10 @@ taskCont.addEventListener("change", (e) => {
   if (e.target.classList.contains("complete-task")) {
     handleCompletion(e.target.parentElement);
     updateTaskCounter();
+
+    if (filterEl.value === "finished" || filterEl.value === "not-finished") {
+      updateTaskContainer();
+    }
   }
 });
 
@@ -219,8 +285,9 @@ taskCont.addEventListener("click", (e) => {
   }
 });
 
+// Evento para aplicar os filtros de classificacao
+filterEl.addEventListener("change", updateTaskContainer);
+
 /*
- * Ordenacao por nome/deadline/prioridade/concluidas
  * Alerta visual de deadline proximo/vencido
- * Filtros de todas/pendentes/concluidas
  */

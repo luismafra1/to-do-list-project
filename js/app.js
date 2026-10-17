@@ -159,7 +159,7 @@ function handleCompletion(task) {
   const status = currentTask ? getDeadlineStatus(currentTask) : "";
   if (status) task.classList.add(status);
 
-  localStorage.setItem("tasks", JSON.stringify(savedTasks));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(savedTasks));
 }
 
 // Funcao criada para atualizar o contador de tasks, caso uma seja concluida ou adicionada

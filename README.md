@@ -3,6 +3,7 @@
 A responsive, keyboard-friendly to-do list built with **vanilla HTML, CSS and JavaScript** — no frameworks or libraries. Tasks are saved in the browser, so they are still there when you come back.
 
 🔗 **Live demo:** [https://luismafra1.github.io/to-do-list-project/](https://luismafra1.github.io/to-do-list-project/)
+
 🔗 **Repository:** [github.com/luismafra1/to-do-list-project](https://github.com/luismafra1/to-do-list-project)
 ![To-Do List screenshot](assets/images/screenshot.png)
 
@@ -60,16 +61,16 @@ The VS Code **Live Server** extension also works.
 │   ├── variables.css   # design tokens, reusable across projects
 │   ├── footer.css      # reusable footer
 │   └── style.css       # styles specific to this app
-└── js/
-    └── app.js
-├── assets/
-│   └── images/
-│       └── screenshot.png
+├── js/
+│   └── app.js
+└── assets/
+    └── images/
+        └── screenshot.png
 ```
 
 ## Data model
 
-Tasks are stored as an array under the `tasks` key in `localStorage`:
+Tasks are stored as an array under the `todo-list:tasks` key in `localStorage`:
 
 ```json
 {
@@ -92,6 +93,7 @@ Tasks are stored as an array under the `tasks` key in `localStorage`:
 - **Changing saved data.** Switching priority from free text to a select changed the stored values and made old data inconsistent, which taught me to think about migration when a data format changes.
 - **Accessible interactions.** I replaced double-click-to-edit with a dedicated edit button, since a double click cannot be triggered from the keyboard.
 - **Derive the UI from the data.** My first deadline alert patched CSS classes onto the page after rendering. It left stale highlights when a task was completed and threw errors when a filter hid some tasks. Computing the class inside the render step (`getDeadlineStatus`) fixed all of that, because every re-render is correct by construction. It also reuses the date lesson: today's date is built from the local year, month and day, and compared with the ISO strings.
+- **Namespacing browser storage.** GitHub Pages project sites share one origin, and `localStorage` is scoped by origin, so two projects using the same key would overwrite each other's data. I prefixed the key with the project name (`todo-list:tasks`) and moved it into a constant, which also showed me why a repeated string should live in one place.
 
 ## Author
 

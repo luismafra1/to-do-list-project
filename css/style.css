@@ -1,3 +1,15 @@
+:root {
+  --color-trash-icon: #ff4d4d;
+  --color-trash-icon-checked: #cc0000;
+  --color-trash-icon-fill: #ffcccc;
+  --behind-schedule: #fef2f2;
+  --behind-schedule-accent: #dc2626;
+  --behind-schedule-text: #b91c1c;
+  --tight-deadline: #fffbeb;
+  --tight-deadline-accent: #d97706;
+  --tight-deadline-text: #92400e;
+}
+
 /* ==========================================
    Base
    ========================================== */
@@ -65,7 +77,6 @@ h2 {
   width: 40%;
   padding: 10px;
   margin: 50px auto;
-  display: flex;
 }
 
 button {
@@ -143,6 +154,8 @@ button:hover {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
+  border-left: 4px solid transparent;
+  border-radius: var(--radius);
 }
 
 .single-task-cont.completed {
@@ -209,6 +222,45 @@ button:hover {
   font-size: 0.8rem;
   text-align: center;
   background-color: transparent;
+}
+
+.behind-schedule {
+  background-color: var(--behind-schedule);
+  border-left-color: var(--behind-schedule-accent);
+}
+
+.tight-deadline {
+  background-color: var(--tight-deadline);
+  border-left-color: var(--tight-deadline-accent);
+}
+
+/* Etiqueta ao lado do nome da task */
+.behind-schedule p:nth-of-type(1)::after,
+.tight-deadline p:nth-of-type(1)::after {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0 0.5rem;
+  border: 1px solid;
+  border-radius: 999px;
+  background-color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+}
+
+.behind-schedule p:nth-of-type(1)::after {
+  content: "Overdue";
+  color: var(--behind-schedule-text);
+  border-color: var(--behind-schedule-accent);
+}
+
+.tight-deadline p:nth-of-type(1)::after {
+  content: "Due soon";
+  color: var(--tight-deadline-text);
+  border-color: var(--tight-deadline-accent);
 }
 
 @keyframes shake {

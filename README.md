@@ -2,8 +2,8 @@
 
 A responsive, keyboard-friendly to-do list built with **vanilla HTML, CSS and JavaScript** — no frameworks or libraries. Tasks are saved in the browser, so they are still there when you come back.
 
-🔗 **Live demo:** [https://luismafra1.github.io/REPO-NAME/](https://luismafra1.github.io/REPO-NAME/)
-
+🔗 **Live demo:** [https://github.com/luismafra1/to-do-list-project](https://github.com/luismafra1/to-do-list-project)
+🔗 **Repository:** [github.com/luismafra1/to-do-list-project](https://github.com/luismafra1/to-do-list-project)
 ![To-Do List screenshot](assets/images/screenshot.png)
 
 ## Features
@@ -18,6 +18,7 @@ A responsive, keyboard-friendly to-do list built with **vanilla HTML, CSS and Ja
 - **Validation**: a task cannot be saved without a name
 - **Dates in the Brazilian format** (DD/MM/YYYY)
 - **Responsive layout** that switches from a column-aligned grid to a stacked layout on small screens
+- **Deadline alerts**: unfinished tasks are highlighted in red with an "Overdue" label when the date has passed, and in amber with a "Due soon" label when it is less than 3 days away
 
 ## Accessibility
 
@@ -25,18 +26,19 @@ A responsive, keyboard-friendly to-do list built with **vanilla HTML, CSS and Ja
 - Task list and counter use `aria-live` so screen readers announce changes
 - Editing is done through a real `<button>`, reachable with the keyboard
 - Visible focus indicator on the (visually hidden) delete checkbox
+- Deadline alerts use a text label as well as color
 
 ## Built with
 
 - HTML5
 - CSS3 (custom properties, Grid, Flexbox, media queries)
-- JavaScript (ES modules, `localStorage`, `crypto.randomUUID()`)
+- JavaScript (ES6+, `localStorage`, `crypto.randomUUID()`)
 
 ## Running locally
 
 ```bash
-git clone https://github.com/luismafra1/REPO-NAME.git
-cd REPO-NAME
+git clone https://github.com/luismafra1/to-do-list-project
+cd to-do-list-project
 ```
 
 The script is loaded as an ES module (`type="module"`), and browsers block modules when a page is opened directly from the file system. Serve the folder with any local server instead, for example:
@@ -60,6 +62,9 @@ The VS Code **Live Server** extension also works.
 │   └── style.css       # styles specific to this app
 └── js/
     └── app.js
+├── assets/
+│   └── images/
+│       └── screenshot.png
 ```
 
 ## Data model
@@ -86,10 +91,7 @@ Tasks are stored as an array under the `tasks` key in `localStorage`:
 - **Layout that stays aligned.** Columns drifted whenever a task had no deadline or a longer priority label. Defining fixed columns with CSS Grid on the row fixed it, and a breakpoint stacks the content before the task name gets too narrow.
 - **Changing saved data.** Switching priority from free text to a select changed the stored values and made old data inconsistent, which taught me to think about migration when a data format changes.
 - **Accessible interactions.** I replaced double-click-to-edit with a dedicated edit button, since a double click cannot be triggered from the keyboard.
-
-## Roadmap
-
-- [ ] Visual alert for upcoming and overdue deadlines
+- **Derive the UI from the data.** My first deadline alert patched CSS classes onto the page after rendering. It left stale highlights when a task was completed and threw errors when a filter hid some tasks. Computing the class inside the render step (`getDeadlineStatus`) fixed all of that, because every re-render is correct by construction. It also reuses the date lesson: today's date is built from the local year, month and day, and compared with the ISO strings.
 
 ## Author
 

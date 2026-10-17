@@ -35,6 +35,12 @@ const priorityLabels = {
   low: "Low",
 };
 
+// Constante para warning da deadline
+const DEADLINE_WARNING_DAYS = 3;
+
+// Constante para trabalhar com o localStorage de modo seguro
+const STORAGE_KEY = "todo-list:tasks";
+
 // Funcao criada para controlar a visibilidade dos containers de task e de nova task
 function handleVisibility() {
   taskCont.style.display = taskCont.style.display === "none" ? "flex" : "none";
@@ -49,14 +55,15 @@ function handleVisibility() {
 /* Funcao criada para atualizar o container das tasks sempre que ha
 uma mudanca nele*/
 function updateTaskContainer() {
-  savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  savedTasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
   taskCont.innerHTML = getVisibleTasks()
     .map((task) => {
       const completedClass = task.isChecked ? "completed" : "";
+      const deadlineClass = getDeadlineStatus(task);
       const safeTask = escapeHTML(task.task);
       const safePriority = escapeHTML(priorityLabels[task.priority] ?? "-");
       return `
-      <div id="task-${task.id}" class="single-task-cont ${completedClass}" role="listitem">
+      <div id="task-${task.id}" class="single-task-cont ${completedClass} ${deadlineClass}" role="listitem">
         <input type="checkbox" aria-label="Select task: ${safeTask}" class="complete-task" ${task.isChecked ? "checked" : ""}/>
         <p><strong>Task:</strong> ${safeTask}</p>
         <p><strong>Deadline:</strong> ${formatDateBR(task.deadline)}</p>
@@ -110,7 +117,7 @@ function saveTask(id = "") {
       currentTask.priority = priorityEl.value;
     }
   }
-  localStorage.setItem("tasks", JSON.stringify(savedTasks));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(savedTasks));
 }
 
 // Funcao criada para deletar a task do array
@@ -126,7 +133,7 @@ function deleteTask() {
   savedTasks = savedTasks.filter(
     (task) => !tasksToDelete.includes(`task-${task.id}`),
   );
-  localStorage.setItem("tasks", JSON.stringify(savedTasks));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(savedTasks));
 }
 
 // Funcao criada para alterar o formato da data para data local do Brasil
@@ -147,6 +154,11 @@ function handleCompletion(task) {
   if (currentTask) {
     currentTask.isChecked = inputChecked.checked;
   }
+
+  task.classList.remove("behind-schedule", "tight-deadline");
+  const status = currentTask ? getDeadlineStatus(currentTask) : "";
+  if (status) task.classList.add(status);
+
   localStorage.setItem("tasks", JSON.stringify(savedTasks));
 }
 
@@ -215,6 +227,32 @@ function escapeHTML(str) {
     .replace(/'/g, "&#39;");
 }
 
+// Funcao para formatar as datas para ISO, para facilitar
+// o alerta de deadline proximo
+function toISODate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+// Retorna a classe de alerta da task ou "", se nao houver
+function getDeadlineStatus(task) {
+  if (task.isChecked || !task.deadline) return "";
+  const now = new Date();
+  const today = toISODate(now);
+  const limit = toISODate(
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + DEADLINE_WARNING_DAYS,
+    ),
+  );
+  if (task.deadline < today) return "behind-schedule";
+  if (task.deadline < limit) return "tight-deadline";
+  return "";
+}
+
 // Evento para adicionar task nova
 addTaskBtn.addEventListener("click", () => {
   saveTaskBtn.innerText = "Save Task";
@@ -271,7 +309,6 @@ taskCont.addEventListener("change", (e) => {
   if (e.target.classList.contains("complete-task")) {
     handleCompletion(e.target.parentElement);
     updateTaskCounter();
-
     if (filterEl.value === "finished" || filterEl.value === "not-finished") {
       updateTaskContainer();
     }
@@ -286,8 +323,6 @@ taskCont.addEventListener("click", (e) => {
 });
 
 // Evento para aplicar os filtros de classificacao
-filterEl.addEventListener("change", updateTaskContainer);
-
-/*
- * Alerta visual de deadline proximo/vencido
- */
+filterEl.addEventListener("change", () => {
+  updateTaskContainer();
+});

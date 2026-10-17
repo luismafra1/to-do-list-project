@@ -2,7 +2,7 @@
 
 A responsive, keyboard-friendly to-do list built with **vanilla HTML, CSS and JavaScript** — no frameworks or libraries. Tasks are saved in the browser, so they are still there when you come back.
 
-🔗 **Live demo:** [https://github.com/luismafra1/to-do-list-project](https://github.com/luismafra1/to-do-list-project)
+🔗 **Live demo:** [https://luismafra1.github.io/to-do-list-project/](https://luismafra1.github.io/to-do-list-project/)
 🔗 **Repository:** [github.com/luismafra1/to-do-list-project](https://github.com/luismafra1/to-do-list-project)
 ![To-Do List screenshot](assets/images/screenshot.png)
 

@@ -5,6 +5,7 @@ A responsive, keyboard-friendly to-do list built with **vanilla HTML, CSS and Ja
 🔗 **Live demo:** [https://luismafra1.github.io/to-do-list-project/](https://luismafra1.github.io/to-do-list-project/)
 
 🔗 **Repository:** [github.com/luismafra1/to-do-list-project](https://github.com/luismafra1/to-do-list-project)
+
 ![To-Do List screenshot](assets/images/screenshot.png)
 
 ## Features

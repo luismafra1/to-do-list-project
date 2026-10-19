@@ -41,6 +41,15 @@ const DEADLINE_WARNING_DAYS = 3;
 // Constante para trabalhar com o localStorage de modo seguro
 const STORAGE_KEY = "todo-list:tasks";
 
+function loadTasks() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 // Funcao criada para controlar a visibilidade dos containers de task e de nova task
 function handleVisibility() {
   taskCont.style.display = taskCont.style.display === "none" ? "flex" : "none";
@@ -55,7 +64,7 @@ function handleVisibility() {
 /* Funcao criada para atualizar o container das tasks sempre que ha
 uma mudanca nele*/
 function updateTaskContainer() {
-  savedTasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  savedTasks = loadTasks();
   taskCont.innerHTML = getVisibleTasks()
     .map((task) => {
       const completedClass = task.isChecked ? "completed" : "";
@@ -92,10 +101,12 @@ function clearInput() {
 
 // Funcao criada para gerenciar o modal no caso de descarte da nova task
 function handleModal(e) {
-  if (e.target === confirmDiscardBtn) {
-    handleVisibility();
-  }
+  const discarded = e.target === confirmDiscardBtn;
   modalEl.close();
+  if (discarded) {
+    handleVisibility();
+    addTaskBtn.focus();
+  }
 }
 
 // Funcao criada para salvar/atualizar a nova task no array
@@ -177,6 +188,7 @@ function updateCurrentTask(e) {
   globalId = e.target.closest(".single-task-cont").id.replace("task-", "");
   const task = savedTasks.find((task) => task.id === globalId);
   handleVisibility();
+  inputTaskEl.focus();
   inputTaskEl.value = task.task;
   deadlineEl.value = task.deadline;
   priorityEl.value = task.priority;
@@ -259,6 +271,7 @@ addTaskBtn.addEventListener("click", () => {
   globalId = "";
   clearInput();
   handleVisibility();
+  inputTaskEl.focus();
 });
 
 // Evento para discartar ou nao a nova task sendo adicionada
@@ -289,6 +302,7 @@ saveTaskBtn.addEventListener("click", () => {
   updateTaskContainer();
   updateTaskCounter();
   handleVisibility();
+  addTaskBtn.focus();
 });
 
 // Evento para deletar uma ou mais tasks selecionadas do array e atualizar o cont. de tasks
@@ -325,4 +339,11 @@ taskCont.addEventListener("click", (e) => {
 // Evento para aplicar os filtros de classificacao
 filterEl.addEventListener("change", () => {
   updateTaskContainer();
+});
+
+inputTaskEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    saveTaskBtn.click();
+  }
 });

@@ -29,6 +29,8 @@ A responsive, keyboard-friendly to-do list built with **vanilla HTML, CSS and Ja
 - Editing is done through a real `<button>`, reachable with the keyboard
 - Visible focus indicator on the (visually hidden) delete checkbox
 - Deadline alerts use a text label as well as color
+- Focus moves into the form when it opens and back to "Add Task" when it closes
+- Pressing Enter in the task name field saves the task
 
 ## Built with
 
